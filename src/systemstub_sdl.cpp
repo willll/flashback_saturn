@@ -22,7 +22,7 @@ extern "C" {
 #include <sl_def.h>
 //#include <sega_mem.h>
 #include <sega_int.h>
-#include <sega_pcm.h>
+//#include <sega_pcm.h>
 #include <sega_snd.h>
 //#include "sega_csh.h"
 //#include "sega_spr.h"
@@ -115,8 +115,8 @@ typedef struct {
 /* Required for audio sound buffers */
 Uint8 buffer_filled[2];
 Uint8 ring_bufs[2][SND_BUFFER_SIZE * SND_BUF_SLOTS];
-static PcmWork pcm_work[2];
-static PcmHn pcm[2];
+//static PcmWork pcm_work[2];
+//static PcmHn pcm[2];
 Uint8 curBuf = 0;
 Uint8 curSlot = 0;
 static Mixer *mix = NULL;
@@ -139,11 +139,11 @@ static volatile	Uint8  tick_wrap = 0;
 static Uint8 firstSoundRun = 1;
 
 /* FUNCTIONS */
-static PcmHn createHandle(int bufno);
-static void play_manage_buffers(void);
+//static PcmHn createHandle(int bufno);
+//static void play_manage_buffers(void);
 static void fill_buffer_slot(void);
-void fill_play_audio(void);
-void sat_restart_audio(void);
+//void fill_play_audio(void);
+//void sat_restart_audio(void);
 void vblIn(void); // This is run at each vblnk-in
 uint8 isNTSC(void);
 
@@ -415,39 +415,39 @@ uint32 SystemStub_SDL::getTimeStamp() {
 }
 
 void SystemStub_SDL::startAudio(AudioCallback callback, void *param) {
-	mix = (Mixer*)param;
+// 	mix = (Mixer*)param;
 
-	memset(ring_bufs, 0, SND_BUFFER_SIZE * 2 * SND_BUF_SLOTS);
+// 	memset(ring_bufs, 0, SND_BUFFER_SIZE * 2 * SND_BUF_SLOTS);
 
-	PCM_Init(); // Initialize PCM playback
+// 	PCM_Init(); // Initialize PCM playback
 
-	audioEnabled = 1; // Enable audio
+// 	audioEnabled = 1; // Enable audio
 
-	// Prepare handles
-	pcm[0] = createHandle(0);
-	pcm[1] = createHandle(1);
+// 	// Prepare handles
+// 	pcm[0] = createHandle(0);
+// 	pcm[1] = createHandle(1);
 
-	// start playing
-	PCM_Start(pcm[0]); 
-	PCM_EntryNext(pcm[1]);
+// 	// start playing
+// 	PCM_Start(pcm[0]); 
+// 	PCM_EntryNext(pcm[1]);
 }
 
 void SystemStub_SDL::stopAudio() {
-	audioEnabled = 0;
+// 	audioEnabled = 0;
 
-	// Stopping playback
-	PCM_Stop(pcm[0]);
-	PCM_Stop(pcm[1]);
+// 	// Stopping playback
+// 	PCM_Stop(pcm[0]);
+// 	PCM_Stop(pcm[1]);
 
-	// Destroy handles
-	PCM_DestroyMemHandle(pcm[0]);
-	PCM_DestroyMemHandle(pcm[1]);
+// 	// Destroy handles
+// 	PCM_DestroyMemHandle(pcm[0]);
+// 	PCM_DestroyMemHandle(pcm[1]);
 
-	// Deinitialize PCM playback
-	PCM_Finish();
+// 	// Deinitialize PCM playback
+// 	PCM_Finish();
 
 
-	return;
+ 	return;
 }
 
 uint32 SystemStub_SDL::getOutputSampleRate() {
@@ -753,108 +753,108 @@ uint8 isNTSC (void) {
 		return 0;
 }
 
-void fill_play_audio(void) {
-//emu_printf("SystemStub_SDL::fill_play_audio\n");
-#ifdef SLAVE_SOUND
-	if ((*(volatile Uint8 *)0xfffffe11 & 0x80) == 0x80 || firstSoundRun) {
-		*(volatile Uint8 *)0xfffffe11 = 0x00; /* FTCSR clear */
-		*(volatile Uint16 *)0xfffffe92 |= 0x10; /* chache parse all */
-		//CSH_AllClr();
+// void fill_play_audio(void) {
+// //emu_printf("SystemStub_SDL::fill_play_audio\n");
+// #ifdef SLAVE_SOUND
+// 	if ((*(volatile Uint8 *)0xfffffe11 & 0x80) == 0x80 || firstSoundRun) {
+// 		*(volatile Uint8 *)0xfffffe11 = 0x00; /* FTCSR clear */
+// 		*(volatile Uint16 *)0xfffffe92 |= 0x10; /* chache parse all */
+// 		//CSH_AllClr();
 
-		SPR_RunSlaveSH((PARA_RTN*)fill_buffer_slot, NULL);  // vbt à remettre
-#else
-	if (firstSoundRun || buffer_filled[0] == 1 || buffer_filled[1] == 1) 
-	{
-		fill_buffer_slot();
-#endif
-		firstSoundRun = 0;
-		//slSlaveFunc(fill_buffer_slot, NULL);
-	}
+// 		SPR_RunSlaveSH((PARA_RTN*)fill_buffer_slot, NULL);  // vbt à remettre
+// #else
+// 	if (firstSoundRun || buffer_filled[0] == 1 || buffer_filled[1] == 1) 
+// 	{
+// 		fill_buffer_slot();
+// #endif
+// 		firstSoundRun = 0;
+// 		//slSlaveFunc(fill_buffer_slot, NULL);
+// 	}
 
-	play_manage_buffers(); // If ready, queue a buffer for playing
+// 	play_manage_buffers(); // If ready, queue a buffer for playing
 
-}
+// }
 
-static PcmHn createHandle(int bufNo) {
-	PcmCreatePara	para;
-	PcmInfo 		info;
-	PcmStatus		*st;
-	PcmHn			pcm;
+// static PcmHn createHandle(int bufNo) {
+// 	PcmCreatePara	para;
+// 	PcmInfo 		info;
+// 	PcmStatus		*st;
+// 	PcmHn			pcm;
 
-	// Initialize the handle
-	PCM_PARA_WORK(&para) = (PcmWork *)(&pcm_work[bufNo]);
-	PCM_PARA_RING_ADDR(&para) = (Sint8 *)(ring_bufs[bufNo]);
-	PCM_PARA_RING_SIZE(&para) = SND_BUFFER_SIZE * SND_BUF_SLOTS;
-	PCM_PARA_PCM_ADDR(&para) = (Sint8*)PCM_ADDR;
-	PCM_PARA_PCM_SIZE(&para) = PCM_SIZE;
+// 	// Initialize the handle
+// 	PCM_PARA_WORK(&para) = (PcmWork *)(&pcm_work[bufNo]);
+// 	PCM_PARA_RING_ADDR(&para) = (Sint8 *)(ring_bufs[bufNo]);
+// 	PCM_PARA_RING_SIZE(&para) = SND_BUFFER_SIZE * SND_BUF_SLOTS;
+// 	PCM_PARA_PCM_ADDR(&para) = (Sint8*)PCM_ADDR;
+// 	PCM_PARA_PCM_SIZE(&para) = PCM_SIZE;
 
-	st = &pcm_work[bufNo].status;
-	st->need_ci = PCM_ON;
+// 	st = &pcm_work[bufNo].status;
+// 	st->need_ci = PCM_ON;
 	
-	// Prepare handle informations
-	PCM_INFO_FILE_TYPE(&info) = PCM_FILE_TYPE_NO_HEADER; // Headerless (RAW)
-	PCM_INFO_DATA_TYPE(&info) = PCM_DATA_TYPE_RLRLRL; // PCM data format
-	PCM_INFO_FILE_SIZE(&info) = SND_BUFFER_SIZE * SND_BUF_SLOTS;
-	PCM_INFO_CHANNEL(&info) = 1; // Mono
-	PCM_INFO_SAMPLING_BIT(&info) = 8; // 8 bits
-	PCM_INFO_SAMPLING_RATE(&info) = 11025; // 11025hz
-	PCM_INFO_SAMPLE_FILE(&info) = SND_BUFFER_SIZE * SND_BUF_SLOTS; // Number of samples in the file
+// 	// Prepare handle informations
+// 	PCM_INFO_FILE_TYPE(&info) = PCM_FILE_TYPE_NO_HEADER; // Headerless (RAW)
+// 	PCM_INFO_DATA_TYPE(&info) = PCM_DATA_TYPE_RLRLRL; // PCM data format
+// 	PCM_INFO_FILE_SIZE(&info) = SND_BUFFER_SIZE * SND_BUF_SLOTS;
+// 	PCM_INFO_CHANNEL(&info) = 1; // Mono
+// 	PCM_INFO_SAMPLING_BIT(&info) = 8; // 8 bits
+// 	PCM_INFO_SAMPLING_RATE(&info) = 11025; // 11025hz
+// 	PCM_INFO_SAMPLE_FILE(&info) = SND_BUFFER_SIZE * SND_BUF_SLOTS; // Number of samples in the file
 
-	pcm = PCM_CreateMemHandle(&para); // Prepare the handle
-	PCM_NotifyWriteSize(pcm, SND_BUFFER_SIZE * SND_BUF_SLOTS);
+// 	pcm = PCM_CreateMemHandle(&para); // Prepare the handle
+// 	PCM_NotifyWriteSize(pcm, SND_BUFFER_SIZE * SND_BUF_SLOTS);
 
-	if (pcm == NULL) {
-		return NULL;
-	}
+// 	if (pcm == NULL) {
+// 		return NULL;
+// 	}
 
-	// Assign information to the pcm handle
-	PCM_SetPcmStreamNo(pcm, 0);
-	PCM_SetInfo(pcm, &info); // 
-	PCM_SetVolume(pcm, 7);
-	PCM_ChangePcmPara(pcm);
+// 	// Assign information to the pcm handle
+// 	PCM_SetPcmStreamNo(pcm, 0);
+// 	PCM_SetInfo(pcm, &info); // 
+// 	PCM_SetVolume(pcm, 7);
+// 	PCM_ChangePcmPara(pcm);
 	
-	return pcm;
-}
+// 	return pcm;
+// }
 
-void sat_restart_audio(void) {
-	//fprintf_saturn(stdout, "restart audio");
-	int idx;
-//emu_printf("restart audio\n");
-	// Stop pcm playing and clean up handles.
-	PCM_Stop(pcm[0]);
-	PCM_Stop(pcm[1]);
+// void sat_restart_audio(void) {
+// 	//fprintf_saturn(stdout, "restart audio");
+// 	int idx;
+// //emu_printf("restart audio\n");
+// 	// Stop pcm playing and clean up handles.
+// 	PCM_Stop(pcm[0]);
+// 	PCM_Stop(pcm[1]);
 
-	PCM_DestroyMemHandle(pcm[0]);
-	PCM_DestroyMemHandle(pcm[1]);
+// 	PCM_DestroyMemHandle(pcm[0]);
+// 	PCM_DestroyMemHandle(pcm[1]);
 
-	// Clean all the buffers
-	memset(ring_bufs, 0, SND_BUFFER_SIZE * 2 * SND_BUF_SLOTS);
+// 	// Clean all the buffers
+// 	memset(ring_bufs, 0, SND_BUFFER_SIZE * 2 * SND_BUF_SLOTS);
 
-	// Prepare new handles
-	pcm[0] = createHandle(0);
-	pcm[1] = createHandle(1);
+// 	// Prepare new handles
+// 	pcm[0] = createHandle(0);
+// 	pcm[1] = createHandle(1);
 
-#ifdef SLAVE_SOUND
-	*(Uint8*)OPEN_CSH_VAR(buffer_filled[0]) = 1;
-	*(Uint8*)OPEN_CSH_VAR(buffer_filled[1]) = 1;
-#else
-	buffer_filled[0] = 1;
-	buffer_filled[1] = 1;	
-#endif
-	// Restart playback
-	PCM_Start(pcm[0]); 
-	PCM_EntryNext(pcm[1]); 
-#ifdef SLAVE_SOUND
-	SPR_InitSlaveSH();
-#endif	
-	firstSoundRun = 1;
-#ifdef SLAVE_SOUND
-	*(Uint8*)OPEN_CSH_VAR(curBuf) = 0;
-#else
-	curBuf = 0;
-#endif
-	return;
-}
+// #ifdef SLAVE_SOUND
+// 	*(Uint8*)OPEN_CSH_VAR(buffer_filled[0]) = 1;
+// 	*(Uint8*)OPEN_CSH_VAR(buffer_filled[1]) = 1;
+// #else
+// 	buffer_filled[0] = 1;
+// 	buffer_filled[1] = 1;	
+// #endif
+// 	// Restart playback
+// 	PCM_Start(pcm[0]); 
+// 	PCM_EntryNext(pcm[1]); 
+// #ifdef SLAVE_SOUND
+// 	SPR_InitSlaveSH();
+// #endif	
+// 	firstSoundRun = 1;
+// #ifdef SLAVE_SOUND
+// 	*(Uint8*)OPEN_CSH_VAR(curBuf) = 0;
+// #else
+// 	curBuf = 0;
+// #endif
+// 	return;
+// }
 
 void fill_buffer_slot(void) {
 	//slCashPurge();
@@ -906,52 +906,52 @@ void fill_buffer_slot(void) {
 	return;
 }
 
-void play_manage_buffers(void) {
-	static int curPlyBuf = 0;
-	static Uint16 counter = 0;
-#ifdef SLAVE_SOUND
-	Uint8 workingBuffer = *(Uint8*)OPEN_CSH_VAR(curBuf);
+// void play_manage_buffers(void) {
+// 	static int curPlyBuf = 0;
+// 	static Uint16 counter = 0;
+// #ifdef SLAVE_SOUND
+// 	Uint8 workingBuffer = *(Uint8*)OPEN_CSH_VAR(curBuf);
 
-	if(*(Uint8*)OPEN_CSH_VAR(buffer_filled[workingBuffer]) == 0) return;
-#else
-	Uint8 workingBuffer = curBuf;
+// 	if(*(Uint8*)OPEN_CSH_VAR(buffer_filled[workingBuffer]) == 0) return;
+// #else
+// 	Uint8 workingBuffer = curBuf;
 
-	if(buffer_filled[workingBuffer] == 0) return;
-#endif
-	if ((PCM_CheckChange() == PCM_CHANGE_NO_ENTRY)) {
-		if(counter < 9000) {
-			PCM_DestroyMemHandle(pcm[curPlyBuf]);  // Destroy old memory handle
-			pcm[curBuf] = createHandle(curPlyBuf); // and prepare a new one
+// 	if(buffer_filled[workingBuffer] == 0) return;
+// #endif
+// 	if ((PCM_CheckChange() == PCM_CHANGE_NO_ENTRY)) {
+// 		if(counter < 9000) {
+// 			PCM_DestroyMemHandle(pcm[curPlyBuf]);  // Destroy old memory handle
+// 			pcm[curBuf] = createHandle(curPlyBuf); // and prepare a new one
 
-			PCM_EntryNext(pcm[curPlyBuf]); 
-#ifdef SLAVE_SOUND
-//emu_printf("OPEN_CSH_VAR(buffer_filled[%d]) = 0\n",curPlyBuf);
-			*(Uint8*)OPEN_CSH_VAR(buffer_filled[curPlyBuf]) = 0;
-#else
-//emu_printf("(buffer_filled[%d]) = 0\n",curPlyBuf);	
-			buffer_filled[curPlyBuf] = 0;
-#endif
-			curPlyBuf ^= 1;
-			counter++;
-		} else {
-#ifdef SLAVE_SOUND			
-			SPR_WaitEndSlaveSH(); // vbt à remettre
-#endif			
-			sat_restart_audio();
-			counter = 0;
-			curPlyBuf = 0;
-		}
-	}
+// 			PCM_EntryNext(pcm[curPlyBuf]); 
+// #ifdef SLAVE_SOUND
+// //emu_printf("OPEN_CSH_VAR(buffer_filled[%d]) = 0\n",curPlyBuf);
+// 			*(Uint8*)OPEN_CSH_VAR(buffer_filled[curPlyBuf]) = 0;
+// #else
+// //emu_printf("(buffer_filled[%d]) = 0\n",curPlyBuf);	
+// 			buffer_filled[curPlyBuf] = 0;
+// #endif
+// 			curPlyBuf ^= 1;
+// 			counter++;
+// 		} else {
+// #ifdef SLAVE_SOUND			
+// 			SPR_WaitEndSlaveSH(); // vbt à remettre
+// #endif			
+// 			sat_restart_audio();
+// 			counter = 0;
+// 			curPlyBuf = 0;
+// 		}
+// 	}
 
-	// If audio gets stuck... restart it
-	if((PCM_GetPlayStatus(pcm[0]) == PCM_STAT_PLAY_END) || (PCM_GetPlayStatus(pcm[1]) == PCM_STAT_PLAY_END)) {
-		sat_restart_audio();
-		counter = 0;
-		curPlyBuf = 0;
-	}
+// 	// If audio gets stuck... restart it
+// 	if((PCM_GetPlayStatus(pcm[0]) == PCM_STAT_PLAY_END) || (PCM_GetPlayStatus(pcm[1]) == PCM_STAT_PLAY_END)) {
+// 		sat_restart_audio();
+// 		counter = 0;
+// 		curPlyBuf = 0;
+// 	}
 
-	return;
-}
+// 	return;
+// }
 /*
 void SCU_DMAWait(void) {
 	Uint32 res;

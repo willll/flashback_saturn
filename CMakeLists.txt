@@ -22,8 +22,6 @@ set(as_flags )
 set(c_flags
         -fno-lto 
         -Os
-        -fno-rtti
-        -fno-exceptions
         -nostdlib 
         -m2
         -c
@@ -40,7 +38,7 @@ set(cxx_flags
          )
 
 set(SOURCES
-    ${SATURN_COMMON}/crt0.s
+    #${SATURN_COMMON}/crt0.s
     ${PROJECT_SOURCE_DIR}/src/gfs_wrap.cpp 
 	${PROJECT_SOURCE_DIR}/src/collision.cpp 
 	${PROJECT_SOURCE_DIR}/src/cutscene.cpp 
@@ -64,7 +62,9 @@ set(SOURCES
 	${PROJECT_SOURCE_DIR}/src/sat_mem_checker.cpp 
 	${PROJECT_SOURCE_DIR}/src/lz.cpp 
 	${PROJECT_SOURCE_DIR}/src/cinit.cpp 
-    ${PROJECT_SOURCE_DIR}/src/workarea.c )
+    ${PROJECT_SOURCE_DIR}/src/workarea.c
+    ${PROJECT_SOURCE_DIR}/saturnport/low.s
+     )
 
 set(CD_FILES
       0.bin )
@@ -115,7 +115,6 @@ add_custom_command(OUTPUT IP.BIN
                   ARGS ${ip_maker_verbose} -o ${CMAKE_CURRENT_BINARY_DIR}/IP.BIN
                         -t ${TARGET_NAME} -p 2 )
         
-target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${PROJECT_SOURCE_DIR}/saturnport/low.o )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGASGL}/lib/libsgl.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_gfs.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_per.a )
