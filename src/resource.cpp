@@ -9,8 +9,9 @@
 extern "C"
 {
 #include <sl_def.h>
-	#include 	<stdio.h>	
-	#include 	<string.h>	
+#include <stdio.h>	
+#include <string.h>	
+#include <cstdlib>
 //#include <sega_mem.h>
 
 

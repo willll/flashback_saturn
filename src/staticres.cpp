@@ -4,6 +4,8 @@
  * Copyright (C) 2005-2019 Gregory Montoir (cyx@users.sourceforge.net)
  */
 
+#include <cstdlib>
+
 #include "game.h"
 #include "resource.h"
 
