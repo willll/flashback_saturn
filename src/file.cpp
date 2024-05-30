@@ -78,7 +78,7 @@ struct stdFile : File_impl {
 };
 
 File::File() {
-	_impl = new stdFile;
+	_impl = new stdFile();
 }
 
 File::~File() {

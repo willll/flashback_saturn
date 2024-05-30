@@ -24,7 +24,6 @@ set(c_flags
         -Os
         -nostdlib 
         -m2
-        -c
          )
 
 set(cxx_flags
@@ -32,9 +31,8 @@ set(cxx_flags
         -Os
         -fno-rtti
         -fno-exceptions
-        -nostdlib 
+        #-nostdlib 
         -m2
-        -c
          )
 
 set(SOURCES
@@ -95,7 +93,7 @@ target_link_options(
     "SHELL:-Xlinker --strip-debug"
     "SHELL:-Xlinker -e -Xlinker ___Start"
     "SHELL:-Xlinker -fno-lto"
-    "SHELL:-m2 -nostartfiles -fpermissive -fno-builtin "
+    "SHELL:-m2 -nostartfiles -fpermissive -fno-builtin"
     "SHELL:-T${PROJECT_SOURCE_DIR}/saturnport/saturn.lnk"
 )
 
@@ -115,11 +113,13 @@ add_custom_command(OUTPUT IP.BIN
                   ARGS ${ip_maker_verbose} -o ${CMAKE_CURRENT_BINARY_DIR}/IP.BIN
                         -t ${TARGET_NAME} -p 2 )
         
+target_link_libraries( ${TARGET_NAME}.elf PUBLIC stdc++ )                       
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGASGL}/lib/libsgl.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_gfs.a )
+target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_csh_sgl.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_per.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_mem.a )
-target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_pcm.a )
+target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_dma.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_snd.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_sys.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_cdc.a )
