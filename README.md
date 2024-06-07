@@ -22,8 +22,10 @@ with english, french, german and spanish versions of the game.
 Compiling:
 ----------
 
-Tweak the Makefile if needed and type make (only gcc3 has been tested so far).
-The SDL and zlib libraries are required.
+Create ninja build system :
+cmake -DCMAKE_TOOLCHAIN_FILE=$SATURN_CMAKE/sega_saturn.cmake -G Ninja ..
+Build :
+ninja
 
 
 Data Files:

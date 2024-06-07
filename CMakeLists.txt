@@ -61,7 +61,7 @@ set(SOURCES
 	${PROJECT_SOURCE_DIR}/src/lz.cpp 
 	${PROJECT_SOURCE_DIR}/src/cinit.cpp 
     ${PROJECT_SOURCE_DIR}/src/workarea.c
-    ${PROJECT_SOURCE_DIR}/saturnport/low.s
+    ${PROJECT_SOURCE_DIR}/src/low.s
      )
 
 set(CD_FILES
@@ -115,9 +115,9 @@ add_custom_command(OUTPUT IP.BIN
         
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC stdc++ )                       
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGASGL}/lib/libsgl.a )
-target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_gfs.a )
+target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${PROJECT_SOURCE_DIR}/saturnport/sega_gfs2.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_csh_sgl.a )
-target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_per.a )
+target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_per_vbt.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_mem.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_dma.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_snd.a )
