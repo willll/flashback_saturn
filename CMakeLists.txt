@@ -13,6 +13,8 @@ set( SEGASGL $ENV{SATURN_SGL} )
 set( TARGET_NAME flashback_saturn )
 set( TARGET_PATH flashback_saturn )
 
+set( ENV{SATURN_CD} "${PROJECT_SOURCE_DIR}/saturnport/" )
+
 project( ${TARGET_NAME} VERSION 0.1.9
                   DESCRIPTION "Du coup flashback"
                   LANGUAGES C CXX ASM)
@@ -20,6 +22,7 @@ project( ${TARGET_NAME} VERSION 0.1.9
 set(as_flags )
 
 set(c_flags
+        -fpermissive
         -fno-lto 
         -Os
         -nostdlib 
@@ -31,12 +34,10 @@ set(cxx_flags
         -Os
         -fno-rtti
         -fno-exceptions
-        #-nostdlib 
         -m2
          )
 
 set(SOURCES
-    #${SATURN_COMMON}/crt0.s
     ${PROJECT_SOURCE_DIR}/src/gfs_wrap.cpp 
 	${PROJECT_SOURCE_DIR}/src/collision.cpp 
 	${PROJECT_SOURCE_DIR}/src/cutscene.cpp 
@@ -84,8 +85,8 @@ target_include_directories(
         ${SEGASGL}/include
         )
 
-target_compile_options(${TARGET_NAME}.elf PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>
-                                                $<$<COMPILE_LANGUAGE:C>:${c_flags}>)
+target_compile_options( ${TARGET_NAME}.elf PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${cxx_flags}>
+                                                $<$<COMPILE_LANGUAGE:C>:${c_flags}> )
 
 target_link_options(
     ${TARGET_NAME}.elf PUBLIC
@@ -97,22 +98,20 @@ target_link_options(
     "SHELL:-T${PROJECT_SOURCE_DIR}/saturnport/saturn.lnk"
 )
 
-add_custom_target(run_${TARGET_NAME} ALL DEPENDS
-                  ${TARGET_NAME}.elf
-                  ${TARGET_NAME}.bin
-                  IP.BIN )
+add_custom_target( run_${TARGET_NAME} ALL DEPENDS
+                    ${TARGET_NAME}.elf
+                    ${TARGET_NAME}.bin
+                    IP.BIN )
 
-add_custom_command(OUTPUT ${TARGET_NAME}.bin
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMAND ${CMAKE_OBJCOPY}
-                   ARGS -O binary ${TARGET_NAME}.elf ${TARGET_NAME}.bin )
-
-add_custom_command(OUTPUT IP.BIN
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                  COMMAND $ENV{SATURN_IPMAKER}/IPMaker
-                  ARGS ${ip_maker_verbose} -o ${CMAKE_CURRENT_BINARY_DIR}/IP.BIN
-                        -t ${TARGET_NAME} -p 2 )
+add_custom_command( OUTPUT ${TARGET_NAME}.bin
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                    COMMAND ${CMAKE_OBJCOPY}
+                    ARGS -O binary ${TARGET_NAME}.elf ${TARGET_NAME}.bin )
         
+add_custom_command( OUTPUT IP.BIN
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/saturnport/
+                    COMMAND ${CMAKE_COMMAND} -E copy IP.BIN ${CMAKE_CURRENT_BINARY_DIR} )
+
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC stdc++ )                       
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGASGL}/lib/libsgl.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${PROJECT_SOURCE_DIR}/saturnport/sega_gfs2.a )
@@ -125,5 +124,5 @@ target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_sys.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_cdc.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_int.a )
 
-include(${SATURN_CMAKE}/install.cmake)
-include(${SATURN_CMAKE}/create_cd.cmake)
+include( ${SATURN_CMAKE}/install.cmake )
+include( ${SATURN_CMAKE}/create_cd.cmake )
