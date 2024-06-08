@@ -67,7 +67,8 @@ set(SOURCES
      )
 
 set(CD_FILES
-      0.bin )
+      0.bin
+      FLASHBCK.RSR )
 
 add_compile_definitions(
                         MODEL_S
@@ -143,11 +144,15 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.bin
           RENAME 0.bin )
 
 install(FILES ${PROJECT_SOURCE_DIR}/saturnport/IP.BIN
-              DESTINATION ${CMAKE_INSTALL_PREFIX}/CD )
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/CD )
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}.cue DESTINATION ${CMAKE_INSTALL_PREFIX} )
+install(FILES ${PROJECT_SOURCE_DIR}/data/FLASHBCK.RSR
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/CD )
 
-list(TRANSFORM CD_FILES PREPEND "${CMAKE_INSTALL_PREFIX}/${INSTALL_DESTINATION}/${TARGET_PATH}/CD/")
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}.cue 
+                DESTINATION ${CMAKE_INSTALL_PREFIX} )
+
+list(TRANSFORM CD_FILES PREPEND "${CMAKE_INSTALL_PREFIX}/CD/")
 
 # Not very nice, it is matching the pathspec file grammar (e.g. output=input syntax)
 set(files_to_write)
@@ -164,7 +169,7 @@ set (filename ${CMAKE_INSTALL_PREFIX}/CD/FILES.txt )
 
 install(CODE "file(WRITE ${filename} ${files_to_write})" )
 
-set(MAKE_CMD $ENV{SATURN_CD}/create_cd.sh
+set(MAKE_CMD /opt/saturn/cd_resources/create_cd.sh
     "${TARGET_NAME}" "\"SBL\"" "\"SBL\"" IP.BIN
     "${TARGET_NAME}.iso" "${CMAKE_INSTALL_PREFIX}/" )
 
