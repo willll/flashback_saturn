@@ -28,36 +28,14 @@ Build :
 ninja
 
 
+
+
 Data Files:
 -----------
 
 You will need the original files, here is the required list :
 
-	FB_TXT.FNT
-	GLOBAL.ICN
-	GLOBAL.FIB
-	GLOBAL.SPC
-	*.OFF
-	*.SPR
-	*.MAP
-	*.PAL
-	*.ANI
-	*.CT
-	*.MBK
-	*.OBJ
-	*.PGE
-	*.RP
-	*.TBN
-	*.CMD
-	*.POL
-	*CINE.*
-
-If you have a version distributed by SSI, you'll have to rename some files :
-
-	logosssi.cmd -> logos.cmd
-	logosssi.pol -> logos.pol
-	menu1ssi.map -> menu1.map
-	menu1ssi.pal -> menu1.pal
+	* FLASHBCK.RSR (to be copied in data folder)
 
 In order to hear music, you'll need the original music files (.mod) of the
 amiga version. Copy them to the DATA directory and rename them like this :
