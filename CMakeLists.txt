@@ -13,6 +13,7 @@ set( SEGASGL $ENV{SATURN_SGL} )
 set( TARGET_NAME flashback_saturn )
 set( TARGET_PATH flashback_saturn )
 
+# remap ABS.TXT, BIB.TXT and CPY.TXT to the project's ones
 set( ENV{SATURN_CD} "${PROJECT_SOURCE_DIR}/saturnport/" )
 
 project( ${TARGET_NAME} VERSION 0.1.9
@@ -100,17 +101,12 @@ target_link_options(
 
 add_custom_target( run_${TARGET_NAME} ALL DEPENDS
                     ${TARGET_NAME}.elf
-                    ${TARGET_NAME}.bin
-                    IP.BIN )
+                    ${TARGET_NAME}.bin)
 
 add_custom_command( OUTPUT ${TARGET_NAME}.bin
                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                     COMMAND ${CMAKE_OBJCOPY}
                     ARGS -O binary ${TARGET_NAME}.elf ${TARGET_NAME}.bin )
-        
-add_custom_command( OUTPUT IP.BIN
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/saturnport/
-                    COMMAND ${CMAKE_COMMAND} -E copy IP.BIN ${CMAKE_CURRENT_BINARY_DIR} )
 
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC stdc++ )                       
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGASGL}/lib/libsgl.a )
@@ -124,5 +120,54 @@ target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_sys.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_cdc.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_int.a )
 
-include( ${SATURN_CMAKE}/install.cmake )
-include( ${SATURN_CMAKE}/create_cd.cmake )
+install(TARGETS ${TARGET_NAME}.elf
+        DESTINATION ${CMAKE_INSTALL_PREFIX} )
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.bin
+              ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.map
+        DESTINATION ${CMAKE_INSTALL_PREFIX} )
+
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
+          DESTINATION ${CMAKE_INSTALL_PREFIX}
+          PATTERN ".git" EXCLUDE )
+else()
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/src
+          PATTERN ".git" EXCLUDE
+          PATTERN "src" EXCLUDE )
+endif()
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.bin
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/CD
+          RENAME 0.bin )
+
+install(FILES ${PROJECT_SOURCE_DIR}/saturnport/IP.BIN
+              DESTINATION ${CMAKE_INSTALL_PREFIX}/CD )
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}.cue DESTINATION ${CMAKE_INSTALL_PREFIX} )
+
+list(TRANSFORM CD_FILES PREPEND "${CMAKE_INSTALL_PREFIX}/${INSTALL_DESTINATION}/${TARGET_PATH}/CD/")
+
+# Not very nice, it is matching the pathspec file grammar (e.g. output=input syntax)
+set(files_to_write)
+foreach(ITR ${CD_FILES})  # ARGN holds all arguments to function after last named one
+  if(ITR MATCHES "(.*)=(.*)")
+    list(APPEND files_to_write "${CMAKE_MATCH_2}=${CMAKE_MATCH_1}")
+  else()
+      list(APPEND files_to_write ${ITR})
+  endif()
+endforeach()
+list(TRANSFORM files_to_write APPEND "\\n" )
+
+set (filename ${CMAKE_INSTALL_PREFIX}/CD/FILES.txt )
+
+install(CODE "file(WRITE ${filename} ${files_to_write})" )
+
+set(MAKE_CMD $ENV{SATURN_CD}/create_cd.sh
+    "${TARGET_NAME}" "\"SBL\"" "\"SBL\"" IP.BIN
+    "${TARGET_NAME}.iso" "${CMAKE_INSTALL_PREFIX}/" )
+
+install(CODE "execute_process(COMMAND
+                                ${MAKE_CMD}
+                                WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/CD)" )
