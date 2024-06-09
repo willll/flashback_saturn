@@ -28,7 +28,7 @@ set(c_flags
         -Os
         -nostdlib
         -m2
-         )
+     )
 
 set(cxx_flags
         -fno-lto
@@ -36,7 +36,7 @@ set(cxx_flags
         -fno-rtti
         -fno-exceptions
         -m2
-         )
+     )
 
 set(SOURCES
       ${PROJECT_SOURCE_DIR}/src/gfs_wrap.cpp
@@ -173,7 +173,7 @@ set (filename ${CMAKE_INSTALL_PREFIX}/CD/FILES.txt )
 install(CODE "file(WRITE ${filename} ${files_to_write})" )
 
 set(MAKE_CMD /opt/saturn/cd_resources/create_cd.sh
-    "${TARGET_NAME}" "\"SBL\"" "\"SBL\"" IP.BIN
+    "${TARGET_NAME}" "\"CD0001\"" "\"VBT\"" IP.BIN
     "${TARGET_NAME}.iso" "${CMAKE_INSTALL_PREFIX}/" )
 
 install(CODE "execute_process(COMMAND
