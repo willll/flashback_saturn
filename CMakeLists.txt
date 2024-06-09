@@ -24,14 +24,14 @@ set(as_flags )
 
 set(c_flags
         -fpermissive
-        -fno-lto 
+        -fno-lto
         -Os
-        -nostdlib 
+        -nostdlib
         -m2
          )
 
 set(cxx_flags
-        -fno-lto 
+        -fno-lto
         -Os
         -fno-rtti
         -fno-exceptions
@@ -39,36 +39,38 @@ set(cxx_flags
          )
 
 set(SOURCES
-    ${PROJECT_SOURCE_DIR}/src/gfs_wrap.cpp 
-	${PROJECT_SOURCE_DIR}/src/collision.cpp 
-	${PROJECT_SOURCE_DIR}/src/cutscene.cpp 
-	${PROJECT_SOURCE_DIR}/src/file.cpp 
-	${PROJECT_SOURCE_DIR}/src/game.cpp 
-	${PROJECT_SOURCE_DIR}/src/graphics.cpp 
-	${PROJECT_SOURCE_DIR}/src/main.cpp 
-	${PROJECT_SOURCE_DIR}/src/menu.cpp 
-	${PROJECT_SOURCE_DIR}/src/mixer.cpp 
-	${PROJECT_SOURCE_DIR}/src/piege.cpp 
-	${PROJECT_SOURCE_DIR}/src/unpack.cpp 
-	${PROJECT_SOURCE_DIR}/src/resource.cpp 
-	${PROJECT_SOURCE_DIR}/src/resource_mac.cpp 
-	${PROJECT_SOURCE_DIR}/src/resource_aba.cpp 
-	${PROJECT_SOURCE_DIR}/src/decode_mac.cpp 
-	${PROJECT_SOURCE_DIR}/src/sfx_player.cpp 
-	${PROJECT_SOURCE_DIR}/src/staticres.cpp 
-	${PROJECT_SOURCE_DIR}/src/systemstub_sdl.cpp 
-	${PROJECT_SOURCE_DIR}/src/util.cpp 
-	${PROJECT_SOURCE_DIR}/src/video.cpp 
-	${PROJECT_SOURCE_DIR}/src/sat_mem_checker.cpp 
-	${PROJECT_SOURCE_DIR}/src/lz.cpp 
-	${PROJECT_SOURCE_DIR}/src/cinit.cpp 
-    ${PROJECT_SOURCE_DIR}/src/workarea.c
-    ${PROJECT_SOURCE_DIR}/src/low.s
+      ${PROJECT_SOURCE_DIR}/src/gfs_wrap.cpp
+      ${PROJECT_SOURCE_DIR}/src/collision.cpp
+      ${PROJECT_SOURCE_DIR}/src/cutscene.cpp
+      ${PROJECT_SOURCE_DIR}/src/file.cpp
+      ${PROJECT_SOURCE_DIR}/src/game.cpp
+      ${PROJECT_SOURCE_DIR}/src/graphics.cpp
+      ${PROJECT_SOURCE_DIR}/src/main.cpp
+      ${PROJECT_SOURCE_DIR}/src/menu.cpp
+      ${PROJECT_SOURCE_DIR}/src/mixer.cpp
+      ${PROJECT_SOURCE_DIR}/src/piege.cpp
+      ${PROJECT_SOURCE_DIR}/src/unpack.cpp
+      ${PROJECT_SOURCE_DIR}/src/resource.cpp
+      ${PROJECT_SOURCE_DIR}/src/resource_mac.cpp
+      ${PROJECT_SOURCE_DIR}/src/resource_aba.cpp
+      ${PROJECT_SOURCE_DIR}/src/decode_mac.cpp
+      ${PROJECT_SOURCE_DIR}/src/sfx_player.cpp
+      ${PROJECT_SOURCE_DIR}/src/staticres.cpp
+      ${PROJECT_SOURCE_DIR}/src/systemstub_sdl.cpp
+      ${PROJECT_SOURCE_DIR}/src/util.cpp
+      ${PROJECT_SOURCE_DIR}/src/video.cpp
+      ${PROJECT_SOURCE_DIR}/src/sat_mem_checker.cpp
+      ${PROJECT_SOURCE_DIR}/src/lz.cpp
+      ${PROJECT_SOURCE_DIR}/src/cinit.cpp
+      ${PROJECT_SOURCE_DIR}/src/workarea.c
+      ${PROJECT_SOURCE_DIR}/src/low.s
      )
 
 set(CD_FILES
       0.bin
-      FLASHBCK.RSR )
+      FLASHBCK.RSR
+      SDDRVS.TSK
+      )
 
 add_compile_definitions(
                         MODEL_S
@@ -109,7 +111,7 @@ add_custom_command( OUTPUT ${TARGET_NAME}.bin
                     COMMAND ${CMAKE_OBJCOPY}
                     ARGS -O binary ${TARGET_NAME}.elf ${TARGET_NAME}.bin )
 
-target_link_libraries( ${TARGET_NAME}.elf PUBLIC stdc++ )                       
+target_link_libraries( ${TARGET_NAME}.elf PUBLIC stdc++ )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGASGL}/lib/libsgl.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${PROJECT_SOURCE_DIR}/saturnport/sega_gfs2.a )
 target_link_libraries( ${TARGET_NAME}.elf PUBLIC ${SEGALIB}/lib/sega_csh_sgl.a )
@@ -150,7 +152,7 @@ install(FILES ${PROJECT_SOURCE_DIR}/saturnport/IP.BIN
 install(FILES ${PROJECT_SOURCE_DIR}/data/FLASHBCK.RSR
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/CD )
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}.cue 
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}.cue
                 DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 list(TRANSFORM CD_FILES PREPEND "${CMAKE_INSTALL_PREFIX}/CD/")
