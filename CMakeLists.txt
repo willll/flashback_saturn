@@ -144,6 +144,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.bin
           RENAME 0.bin )
 
 install(FILES ${PROJECT_SOURCE_DIR}/saturnport/IP.BIN
+              ${PROJECT_SOURCE_DIR}/saturnport/SDDRVS.TSK
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/CD )
 
 install(FILES ${PROJECT_SOURCE_DIR}/data/FLASHBCK.RSR
