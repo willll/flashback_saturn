@@ -29,7 +29,7 @@ ninja
 
 NOT FOR VBT :
 
-time { rm -rf *; cmake -DCMAKE_INSTALL_PREFIX=/saturn/fb -DCMAKE_TOOLCHAIN_FILE=$SATURN_CMAKE/sega_saturn.cmake -G Ninja ..; ninja; ninja install; }
+time { rm -rf *; cmake -DCMAKE_INSTALL_PREFIX=/saturn/fb -DCMAKE_TOOLCHAIN_FILE=$SATURN_CMAKE/sega_saturn.cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..; ninja; ninja install; }
 
 
 
