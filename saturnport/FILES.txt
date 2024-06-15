@@ -1,3 +1,0 @@
-/=../root
-/=../data
-0.BIN=../root/sl.bin
